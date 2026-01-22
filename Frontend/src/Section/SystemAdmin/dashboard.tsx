@@ -10,7 +10,8 @@ import {
     ArrowUpRight,
     TrendingUp,
     Map,
-    Plus
+    Plus,
+    Download
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getSystemDashboardStats } from '@/api';
@@ -38,6 +39,36 @@ export default function SystemAdminDashboard() {
 
         fetchStats();
     }, [user]);
+
+    const handleDownloadWaitlist = async () => {
+        try {
+            // @ts-ignore
+            const token = user?.token || localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/waitlist/export`, {
+                method: 'GET',
+                headers: {
+                    'token': `${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to download waitlist');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `waitlist-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error('Error downloading waitlist:', error);
+            alert('Failed to download waitlist data');
+        }
+    };
 
     const cards = [
         {
@@ -85,6 +116,14 @@ export default function SystemAdminDashboard() {
                     <p className="text-gray-500 mt-2">Manage districts, schools, and monitor system performance.</p>
                 </div>
                 <div className="flex gap-4">
+                    <Button
+                        onClick={handleDownloadWaitlist}
+                        variant="outline"
+                        className="border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+                    >
+                        <Download className="mr-2 h-4 w-4" />
+                        Download Waitlist
+                    </Button>
                     <Button
                         onClick={() => navigate('/system-admin/districts/new')}
                         className="bg-[#00a58c] hover:bg-[#008f7a]"

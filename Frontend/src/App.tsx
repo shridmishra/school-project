@@ -109,6 +109,7 @@ export default function App() {
           <Route path="/terms" element={<TermsPage />} />
 
           {/* System Admin Routes */}
+          <Route path="/admin" element={<Navigate to="/system-admin" replace />} />
           <Route path="/system-admin" element={<ProtectedRoute><SystemAdminDashboard /></ProtectedRoute>} />
           <Route path="/system-admin/districts" element={<ProtectedRoute><DistrictsList /></ProtectedRoute>} />
           <Route path="/system-admin/districts/new" element={<ProtectedRoute><AddDistrict /></ProtectedRoute>} />
