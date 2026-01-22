@@ -1,0 +1,52 @@
+import express from 'express';
+import multer from 'multer';
+import {
+  getDashboardStats,
+  getStateLevelStats,
+  getDistrictComparison,
+  bulkImportSchools,
+  cloneFromTemplate,
+  getCurrentTerms,
+  createTermsVersion,
+  getAllTermsVersions,
+  recordTermsAcceptance,
+  getAllAdmins
+} from '../controllers/systemAdminController.js';
+import { authenticateToken, authorizeRoles } from '../middlewares/authMiddleware.js';
+import { Role } from '../enum.js';
+
+const router = express.Router();
+
+// Configure multer for file uploads (Excel import)
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+        file.mimetype === 'application/vnd.ms-excel') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only Excel files are allowed'), false);
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+// All routes require authentication
+router.use(authenticateToken);
+
+// SystemAdmin only routes
+router.get('/dashboard', authorizeRoles(Role.SystemAdmin), getDashboardStats);
+router.get('/analytics/states', authorizeRoles(Role.SystemAdmin), getStateLevelStats);
+router.get('/analytics/districts', authorizeRoles(Role.SystemAdmin), getDistrictComparison);
+router.post('/import/schools', authorizeRoles(Role.SystemAdmin), upload.single('file'), bulkImportSchools);
+router.post('/clone-district', authorizeRoles(Role.SystemAdmin), cloneFromTemplate);
+router.get('/admins', authorizeRoles(Role.SystemAdmin), getAllAdmins);
+
+// Terms management routes
+router.get('/terms', getCurrentTerms); // Public for registration flow
+router.get('/terms/all', authorizeRoles(Role.SystemAdmin), getAllTermsVersions);
+router.post('/terms', authorizeRoles(Role.SystemAdmin), createTermsVersion);
+router.post('/terms/accept', recordTermsAcceptance); // Used during registration
+
+export default router;

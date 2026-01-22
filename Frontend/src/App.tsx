@@ -1,6 +1,6 @@
 import RootLayout from "./layout";
 import LandingPage from "./Section/LandingPage";
-import {SignupForm} from "./components/SignupPage";
+import { SignupForm } from "./components/SignupPage";
 import LoginForm from "./components/SigninPage";
 import AddSchool from "./Section/School/add-school";
 import AddTeacher from "./Section/School/add-teacher";
@@ -36,11 +36,18 @@ import SetupStudents from "./Section/School/setup-students";
 import SetupPage from "./Section/School/setup-page";
 // import FirstLogin from "./components/FirstLogin";
 import CompleteTeacherRegistration from "@/Section/Teacher/complete-registration";
+import TermsPage from "@/components/TermsPage";
+// System Admin Components (Placeholders for now)
+import SystemAdminDashboard from "@/Section/SystemAdmin/dashboard";
+import DistrictsList from "@/Section/SystemAdmin/districts";
+import AddDistrict from "@/Section/SystemAdmin/districts/add-district";
+import ViewDistrict from "@/Section/SystemAdmin/districts/view-district";
+import BulkImportSchools from "@/Section/SystemAdmin/schools/bulk-import";
 
 
 // Reusable ProtectedRoute component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   return user ? <>{children}</> : <Navigate to="/" />;
 };
 
@@ -49,7 +56,7 @@ export default function App() {
     <div className="min-h-screen bg-white text-gray-800">
       <RootLayout>
         <Routes>
-          
+
           <Route path="/" element={<LandingPage />} />
           <Route path="/signup" element={<SignupForm />} />
           <Route path="/signin" element={<LoginForm />} />
@@ -69,7 +76,7 @@ export default function App() {
           <Route path="/editform/:id" element={<ProtectedRoute><EditForm /></ProtectedRoute>} />
           <Route path="/schoolAdmin/submitform/:id" element={<ProtectedRoute><FormPageAdmin /></ProtectedRoute>} />
 
- 
+
           <Route path="/viewforms" element={<ProtectedRoute><ViewForms /></ProtectedRoute>} />
           <Route path="/teachers/createform" element={<ProtectedRoute><FormBuilderTeacher /></ProtectedRoute>} />
           <Route path="/teachers/editform/:id" element={<ProtectedRoute><EditFormTeacher /></ProtectedRoute>} />
@@ -87,7 +94,7 @@ export default function App() {
           <Route path="/teacher" element={<ProtectedRoute><Teachers /></ProtectedRoute>} />
           <Route path="/student" element={<ProtectedRoute><Students /></ProtectedRoute>} />
 
-          
+
           <Route path="/school/points-history" element={<ProtectedRoute><DetailedHistory /></ProtectedRoute>} />
           <Route path="/teachers/points-history" element={<ProtectedRoute><DetailedHistory /></ProtectedRoute>} />
 
@@ -99,6 +106,14 @@ export default function App() {
           <Route path="/setup-students" element={<ProtectedRoute><SetupStudents /></ProtectedRoute>} />
           <Route path="/teachers/students-setup" element={<ProtectedRoute><SetupStudents /></ProtectedRoute>} />
           <Route path="/teacher/complete-registration" element={<CompleteTeacherRegistration />} />
+          <Route path="/terms" element={<TermsPage />} />
+
+          {/* System Admin Routes */}
+          <Route path="/system-admin" element={<ProtectedRoute><SystemAdminDashboard /></ProtectedRoute>} />
+          <Route path="/system-admin/districts" element={<ProtectedRoute><DistrictsList /></ProtectedRoute>} />
+          <Route path="/system-admin/districts/new" element={<ProtectedRoute><AddDistrict /></ProtectedRoute>} />
+          <Route path="/system-admin/districts/:id" element={<ProtectedRoute><ViewDistrict /></ProtectedRoute>} />
+          <Route path="/system-admin/schools/import" element={<ProtectedRoute><BulkImportSchools /></ProtectedRoute>} />
         </Routes>
       </RootLayout>
     </div>
